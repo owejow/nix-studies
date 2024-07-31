@@ -1,3 +1,5 @@
 ---
-title: Notes on learning Nix
+title: "Welcome to my blog"
+date: 2024-07-31
+---
 
