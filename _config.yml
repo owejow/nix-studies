@@ -1,2 +1,4 @@
 theme: hacker
+plugins:
+  - jekyll-remote-theme
 description: notes for studying nix, nixos and flakes
