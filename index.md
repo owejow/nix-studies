@@ -1,4 +1,3 @@
 ---
-title: Welcome to my blog
----
+title: Notes on learning Nix
 
