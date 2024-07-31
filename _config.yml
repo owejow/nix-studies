@@ -1,2 +1,2 @@
-theme: minima
-description: various notes taken in order to better understand nix
+theme: hacker
+description: notes for studying nix, nixos and flakes
