@@ -1,5 +1,4 @@
 ---
-title: "Welcome to my blog"
+title: "Nix Study Notes"
 date: 2024-07-31
 ---
-
