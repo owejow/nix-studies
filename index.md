@@ -1,6 +1,5 @@
 ---
 title: "Nix Study Notes"
-date: 2024-07-31
 ---
 
 # Notes related to Nix Studies
@@ -8,3 +7,4 @@ date: 2024-07-31
 - [Useful Links](./docs/useful-links.md)
 - [Flake Studies](./docs/flake-studies.md)
 - [Terminology](./docs/terminology.md)
+- [Ueful Tips](./docs/useful-tips.md)

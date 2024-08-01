@@ -1,24 +1,26 @@
 ---
 title: "Useful Links"
-date: 2024-07-31
 ---
 
 # Standard Documentation
 
 - [Nix Dev](https://nix.dev/): Standard documenation for Nix ecosystem
 - [Nix Manual](https://nix.dev/manual/nix/2.18/): 2.18 manual
-- [Nix Packages Manual](https://nixos.org/manual/nixpkgs/stable/)
 - [NixOS Manual](https://nixos.org/manual/nixos/stable/)
+- [Nix Packages Manual](https://nixos.org/manual/nixpkgs/stable/)
+- [NixOS Manual](https://nixos.org/manual/nixos/stable/): has a bit better formatting
 - [Unofficial Nixos Wiki](https://nixos.wiki/wiki/Main_Page)
 
 # Guides
 
 - [Nixos and Flakes](https://nixos-and-flakes.thiscute.world/introduction/): extremely useful guide for setting up nix with flakes
+- [Nixos Asia](https://nixos.asia/en/)
 
 # Module System
 
 - [Module System](https://nix.dev/tutorials/module-system/)
 - [Infinisil Module System Video](https://infinisil.com/modules.mp4)
+- [writing modules](https://nlewo.github.io/nixos-manual-sphinx/development/writing-modules.xml.html#)
 
 # Flakes
 

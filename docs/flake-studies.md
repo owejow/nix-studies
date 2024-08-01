@@ -1,6 +1,5 @@
 ---
 title: "Flake Studies"
-date: 2024-07-31
 ---
 
 # Flake Studies

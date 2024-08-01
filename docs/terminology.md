@@ -1,4 +1,6 @@
---- title: "Nix Terminology" date: 2024-07-31 ---
+---
+title: "Nix Terminology"
+---
 
 # Flake Terms
 
