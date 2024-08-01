@@ -14,11 +14,7 @@ Flakes](https://zero-to-nix.com/concepts/flakes) as a starting point.
 Flakes process nix code. They take inputs and generate a set of outputs that nix can use.
 Flakes can output various things such as:
 
-- packages: Nix packages are self-contained bundles that are built using
-  derivations and provide some kind of software or dependencies of software on
-  your computer. A package can have dependencies on other packages, which are
-  encoded in its closure. Each package lives at a unique path in the Nix store
-  indexed by its name and its input hash.
+- packages
 - run programs
 - development environments
 - formatters
@@ -86,7 +82,55 @@ Sample excerpt from a flake.lock file:
 
 In the above example the nixpkgs is pinned to the revision: "de60d387a0e5737375ee61848872b1c8353f945e"
 
-## Flake Output schema
+## Flake outputs
+
+Flake outputs is what a flake produces as a part of its build. A flake can
+produce many different outputs simultaneously.
+
+### Exporting Functions in A Flake
+
+Flakes can output functions for use elsewhere. Nixpkgs outputs many helper
+functions to be used via the lib attribute. By convention the **lib** attribute
+is used to output functions. Any attribute can be used to store the custom functions.
+
+An example custom function definition as a flake output:
+
+```nix
+{
+  outputs = { self }: {
+    lib = {
+      sayHello = name: "Hello there, ${name}!";
+    };
+  };
+}
+```
+
+### System Specificity
+
+Some flake outputs (such as packages, development environments and NixOS configurations), need to be system
+specific.
+
+Exmaple of how to specify the system in a flake:
+
+```nix
+{
+  outputs = { self, nixpkgs }: let
+    # Declare the system
+    system = "x86_64-linux";
+    # Use a system-specific version of Nixpkgs
+    pkgs = import nixpkgs { inherit system; };
+  in {
+    # Output `ponysay` as the default package of the flake
+    packages.${system}.default = pkgs.ponysay;
+  };
+}
+```
+
+The [Flake Parts](https://flake.parts/) and [Flake
+Utils](https://github.com/numtide/flake-utils) utilities can be used to
+simplify specification for multiple systems.
+
+### Flake Output schema
 
 The output schema for a flake is described in the nix package manager
 src/nix/flake.cc in CmdFlakeCheck. The output schema represents the various
@@ -201,5 +245,66 @@ can be found at:
         pkgs.mkShell { packages = with pkgs; [ curl git jq wget ]; };
     });
 }
+```
 
+## Flake Templates
+
+Flake templates enable you to either initialize a new Nix project with
+pre-supplied content or add a set of files to an existing project.
+
+A template can be initialized using the following command:
+
+```nix
+    nix flake init --template <reference>
+```
+
+To get a list of default flake templates on NixOS:
+
+```nix
+    nix flake show templates
+```
+
+This will output something like:
+
+```
+    github:NixOS/templates/be93f0377ff6e9a5538eb98508adf0bb57a73e66
+├───defaultTemplate: template: A very basic flake
+└───templates
+    ├───bash-hello: template: An over-engineered Hello World in bash
+    ├───c-hello: template: An over-engineered Hello World in C
+    ├───compat: template: A default.nix and shell.nix for backward compatibility with Nix installations that don't support flakes
+    ├───dotnet: template: A .NET application and test project
+    ├───empty: template: A flake with no outputs
+    ├───full: template: A template that shows all standard flake outputs
+    ├───go-hello: template: A simple Go package
+    ├───haskell-flake: template: A haskell-flake template
+    ├───haskell-hello: template: A Hello World in Haskell with one dependency
+    ├───haskell-nix: template: An haskell.nix template using hix
+    ├───hercules-ci: template: An example for Hercules-CI, containing only the necessary attributes for adding to your project.
+    ├───latexmk: template: A simple LaTeX template for writing documents with latexmk
+    ├───pandoc-xelatex: template: A report built with Pandoc, XeLaTex and a custom font
+    ├───python: template: Python template, using poetry2nix
+    ├───rust: template: Rust template, using Naersk
+    ├───rust-web-server: template: A Rust web server including a NixOS module
+    ├───simpleContainer: template: A NixOS container running apache-httpd
+    ├───trivial: template: A very basic flake
+    └───utils-generic: template: Simple, all-rounder template with utils enabled and devShell populated
+```
+
+To create a flake.nix file based on a template in the current directory:
+
+```nix
+    nix flake init -t github:hercules-ci/flake-parts
+```
+
+To create a flake.nix file based on a template in the specified directory:
+
+```nix
+    nix flake new -t github:hercules-ci/flake-parts my-directory
+```
+
+To show all templates available for flake-parts:
+
+```nix
+    nix flake show github:hercules-ci/flake-parts
 ```

@@ -55,6 +55,9 @@ beyond.
 **Flake Hub**: FlakeHub is a platform for discovering and publishing Nix flakes
 built by Determinate Systems. [FlakeHub](https://flakehub.com/)
 
+**Flake Outputs**: Flake outputs are what a flake produces as part of its
+build. Each flake can have many different outputs simultaneously,
+
 **Flakes**: Nix flake is a directory with a flake.nix and flake.lock at the
 root that outputs Nix expressions that others can use to do things like build
 packages, run programs, use development environments, or stand up NixOS
