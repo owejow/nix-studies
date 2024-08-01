@@ -22,12 +22,35 @@ date: 2024-07-31
 # Flakes
 
 - [1000 instances of nixpkgs](https://zimbatm.com/notes/1000-instances-of-nixpkgs)
+- [Flake Parts](https://flake.parts/): core of ditributed framework for writing flakes
+- [Flakes aren't real](https://jade.fyi/blog/flakes-arent-real/)
+- [Ultimate Nix Flakes Guide](https://www.youtube.com/watch?v=JCeYq72Sko0)
+- [Nix Flakes Explained](https://www.youtube.com/watch?v=S3VBi6kHw5c)
 
 # Neovim in Nix
 
 - [Nixvim](https://nix-community.github.io/nixvim/): official nixvim documentation
 - [Nixvim Configuration Example](https://github.com/owejow/nixvim-config): Sample nixvim configuration inside a Flake
+- [Neovim Distro Powered by Nix](https://www.youtube.com/watch?v=b641h63lqy0) (video)
 
 # Nix Development Environment
 
 - [Example Flake Using Modules](https://github.com/Sapo-Dorado/nix-services): Useful for setting up environments for development
+
+# Overrides and Overlays
+
+- [Tricky Package Overrides](https://www.youtube.com/watch?v=VkkUzggJejo&list=PLyzwHTVJlRc8yjlx4VR4LU5A5O44og9in): (video) Nix hour episode 81
+- [Customize Nix Packages](https://www.youtube.com/watch?v=jHb7Pe7x1ZY)
+
+# Nix Language
+
+- [Nix Language Explained](https://www.youtube.com/watch?v=UgrwoAGSPOQ): video
+
+# Nix Home Manager
+
+- [Nix Home Manager](https://www.youtube.com/watch?v=FcC2dzecovw) video
+
+# Video Series
+
+- [Nix Hour](https://www.youtube.com/watch?v=VkkUzggJejo&list=PLyzwHTVJlRc8yjlx4VR4LU5A5O44og9in): (video) covers topics in Nix
+-
