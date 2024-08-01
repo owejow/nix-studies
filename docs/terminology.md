@@ -2,6 +2,8 @@
 
 # Flake Terms
 
+Terms taken from: [Concepts](https://zero-to-nix.com/concepts)
+
 **Caching**: Nix uses caching to make building packages faster and more
 efficient. This in turn makes other Nix operations that involve building
 packages, like creating development environments and standing up NixOS
