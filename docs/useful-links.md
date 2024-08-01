@@ -9,6 +9,7 @@ date: 2024-07-31
 - [Nix Manual](https://nix.dev/manual/nix/2.18/): 2.18 manual
 - [Nix Packages Manual](https://nixos.org/manual/nixpkgs/stable/)
 - [NixOS Manual](https://nixos.org/manual/nixos/stable/)
+- [Unofficial Nixos Wiki](https://nixos.wiki/wiki/Main_Page)
 
 # Guides
 
@@ -26,6 +27,8 @@ date: 2024-07-31
 - [Flakes aren't real](https://jade.fyi/blog/flakes-arent-real/)
 - [Ultimate Nix Flakes Guide](https://www.youtube.com/watch?v=JCeYq72Sko0)
 - [Nix Flakes Explained](https://www.youtube.com/watch?v=S3VBi6kHw5c)
+- [Flake Concepts](https://zero-to-nix.com/concepts/flakes)
+- [Nix Flake Wiki](https://nixos.wiki/wiki/Flakes)
 
 # Neovim in Nix
 
@@ -41,6 +44,7 @@ date: 2024-07-31
 
 - [Tricky Package Overrides](https://www.youtube.com/watch?v=VkkUzggJejo&list=PLyzwHTVJlRc8yjlx4VR4LU5A5O44og9in): (video) Nix hour episode 81
 - [Customize Nix Packages](https://www.youtube.com/watch?v=jHb7Pe7x1ZY)
+- [Nixpkgs Overlays - A place for all excluded packages](https://www.youtube.com/watch?v=W85mF1zWA2o)
 
 # Nix Language
 
@@ -53,4 +57,3 @@ date: 2024-07-31
 # Video Series
 
 - [Nix Hour](https://www.youtube.com/watch?v=VkkUzggJejo&list=PLyzwHTVJlRc8yjlx4VR4LU5A5O44og9in): (video) covers topics in Nix
--
