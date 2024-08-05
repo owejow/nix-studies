@@ -101,13 +101,132 @@ Sample execution:
 
 ```
 
-## functions in lib.fixed-point.nix
+## Critical lib.fixed-point.nix functions
 
 Understanding these functions is critical to understanding the overall structure and behavior of nixpkgs:
+
+### lib.fix
+
+The lib.fix or fixed-point-combinator function is critical for many of the
+nixpkgs features. The function is defined in a single line and seems quite
+innocuous at first glance:
 
 ```nix
   fix = f: let x = f x; in x;
 ```
+
+An example provided in the source code is the following:
+
+```nix
+    nix-repl> f = self: {
+                    foo = "foo";
+                    bar = "bar";
+                    foobar = self.foo + self.bar;
+                  }
+    nix-repl> fix f
+        # =>   { bar = "bar"; foo = "foo"; foobar = "foobar"; }
+```
+
+How does the fix function manage to resolve the "self" variables in the
+function declaration g? The tricky part is how is it possible that "x" is
+resolved to anything? The initial declaration of "x" is equal to "f(x)". This
+seemingly circular definition is resolvable because Nix is a lazy language, it
+evaluates its arguments as little as required to return a result.
+
+Arguments in nix are passed by name inside the function. The expressions remain
+as thunks, or unexecuted expressions. The nix interpreter would evaluate the above
+call in the following manner:
+
+1. Initial call to evaluate:
+
+```nix
+    let
+        g = self: {
+            foo = "foo";
+            bar = "bar";
+            foobar = self.foo + self.bar;
+        }
+    in
+    lib.fix g;
+```
+
+2. The function fix definition gets expanded:
+
+```nix
+    (f: let x = f x; in x;) g
+```
+
+3. The function is called with argument g. In the first step
+   the argument f is substituted with the variable definition for
+   g:
+
+```nix
+    let x = (self: { foo = "foo"; bar = "bar"; foobar = self.foo + self.bar;}}) x
+```
+
+4. The next step is where the variable x is substtituted for the argument "self"
+   for the function call:
+
+```nix
+    let x = {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar};
+```
+
+5. Next we substitute the value of x into the right hand side:
+
+```nix
+    let x = {
+             foo = "foo";
+             bar = "bar";
+             foobar = {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.foo +
+                      {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.bar;
+        }
+```
+
+6. The value of x.foo is resolved
+
+```nix
+    let x = {
+             foo = "foo";
+             bar = "bar";
+             foobar = "foo" +
+                      {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.bar;
+        }
+```
+
+7. The value of x.bar is resolved:
+
+```nix
+    let x = {
+             foo = "foo";
+             bar = "bar";
+             foobar = "foo" +
+                      "bar";
+        }
+```
+
+8. The foobar expression is evaluated:
+
+```nix
+    let x = {
+             foo = "foo";
+             bar = "bar";
+             foobar = "foobar";
+        }
+```
+
+9. Amazingly the expression x = f x was evaluated without actually knowing what the
+   value of x was originally. Next we return "f x" or the final attribute set
+   calculated above:
+
+```nix
+    {
+      foo = "foo";
+      bar = "bar";
+      foobar = "foobar";
+    }
+```
+
+## other
 
 ```nix
   fix' = f: let x = f x // { __unfix__ = f; }; in x;
