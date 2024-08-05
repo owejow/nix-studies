@@ -8,3 +8,4 @@ title: "Nix Study Notes"
 - [Flake Studies](./docs/flake-studies.md)
 - [Terminology](./docs/terminology.md)
 - [Ueful Tips](./docs/useful-tips.md)
+- [Library Functions](./docs/library-functions.md)
