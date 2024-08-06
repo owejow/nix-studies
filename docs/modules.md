@@ -203,6 +203,458 @@ Composed types are types that take a type as a parameter.
   and return an argument of type <to>. Can be used to preserve backward
   compatibility if an option's type is changed.
 
+## Submodule Types
+
+The submodules type defines a set o fsub-options that can be handled as a
+separate module. A submodule type takes parameter <o>, that is a set, or
+function that returns a set along with the <options> key defining the
+sub-options. The submodule options are type-checked according to the options
+declaration. Submodules can be arbitrarily nested.
+
+The option set can be defined directly or as a reference. Even if all of the
+submodules options have a default value, you will need to provide a default
+value (e.g. an empty set) if you want users to leave an submodule attribute as
+undefined.
+
+Example of direct definition of a submodule type:
+
+```nix
+{
+  options.mod = mkOption {
+    description = "submodule example";
+    type = with types; submodule {
+      options = {
+        foo = mkOption {
+          type = int;
+        };
+        bar = mkOption {
+          type = str;
+        };
+      };
+    };
+  };
+}
+```
+
+Example of reference definition of a submodule type:
+
+```nix
+let
+  modOptions = {
+    options = {
+      foo = mkOption {
+        type = int;
+      };
+      bar = mkOption {
+        type = int;
+      };
+    };
+  };
+in
+{
+  options.mod = mkOption {
+    description = "submodule example";
+    type = with types; submodule modOptions;
+  };
+}
+
+```
+
+Submodule types are especially powerful when used with composesed types (e.g
+attrsOf or Listof). When composed with listOf, a submodule allows multiple defintions
+of a submodule option:
+
+Declaration of a list of submodules:
+
+```nix
+{
+  options.mod = mkOption {
+    description = "submodule example";
+    type = with types; listOf (submodule {
+      options = {
+        foo = mkOption {
+          type = int;
+        };
+        bar = mkOption {
+          type = str;
+        };
+      };
+    });
+  };
+}
+
+```
+
+Definition of a list of submodules:
+
+```nix
+{
+    config.mod = [
+        { foo = 1; bar = "one"; }
+        { foo = 2; bar = "two"; }
+    ];
+}
+```
+
+When composed with attrsOf, the submodule allows multiple named defintions of a submodule option:
+
+Declaration of an attibute sets of submodules
+
+```nix
+
+  options.mod = mkOption {
+    description = "submodule example";
+    type = with types; attrsOf (submodule {
+      options = {
+        foo = mkOption {
+          type = int;
+        };
+        bar = mkOption {
+          type = str;
+        };
+      };
+    });
+  };
+}
+```
+
+Definition of attribute sets of Submodules
+
+```nix
+{
+  config.mod.one = { foo = 1; bar = "one"; };
+  config.mod.two = { foo = 2; bar = "two"; };
+}
+
+```
+
+## Extending Types
+
+Two main characteristics of types are their check and merge functions.
+
+- check : takes a value as a parameter and returns a boolean. A type check can
+  be extended via the addCheck function or to fully override the check function
+  entirely.
+
+  ```nix
+      # Adding a type check to an option
+      {
+        byte = mkOption {
+        description = "An integer between 0 and 255.";
+        type = types.addCheck types.int (x: x >= 0 && x <= 255);
+      };
+  ```
+
+  ```nix
+      # Overriding a type check
+      {
+        nixThings = mkOption {
+          description = "words that start with 'nix'";
+          type = types.str // {
+            check = (x: lib.hasPrefix "nix" x);
+          };
+        };
+      }
+  ```
+
+- merge : function that is used to merge multiple values in a set. The function
+  takes two parameters, loc the option path as a list of strings, and defs the
+  list of defined values as a list. It is possible to override the type merge
+  function for custom needs.
+
+## Custom Types
+
+User can create custom types using the mkOptionType function. It is critical to
+become familiar with types.nix before creating a new type.
+
+The only required parameter for a custom type is the name. The arguments to the function
+are the following:
+
+- name : string representation of the type function name.
+- description : documentation for the type and any of its arguments.
+- check : a function that takes the definition value as a parameter and returns
+  a boolen. true for success and false for failure.
+- merge : a function to merge multiple definition values together. It takes
+  two parameters:
+
+  - loc : the option path as a list of strings : e.g. [ "boot" "loader" "grub" "enable"]
+  - defs : the list of sets of defined value and file where the value was defined. The
+    merge funciton should return the merged value or throw an error in case the values
+    are problematic or can not be merged. An example of the defs definition is provided
+    below:
+
+    ```nix
+        [ { file = "/foo.nix"; value = 1; } { file = "/bar.nix"; value = 2 } ]
+    ```
+
+- getSubOptions : takes a submodule as a type parameter and geenerates
+  sub-option documentation.
+- getSubModules : this function returns the type parameters submodules. The
+  function should recursively look into submodules and reutrn
+  <elemType>.getSubModules
+- substSubModules : it takes a submodule as a type parameter and can be used to
+  susbtitute the parameter of a submodule type.
+- typeMerge <f> : a function to merge multipe type declarations. a null return
+  value means the type cannot be merged. The function <f> is the type to merge functor.
+- functor : an attribute set representing the type. It is used for type
+  operations and isn comprised of the following keys:
+  - type : the type function
+  - wrapped : holds the type parameter for composed types.
+  - payload : holds the value parameter for value types. Standard types that
+    have payloads are enum, separatedString and submodule types.
+  - binOp : binary operation that can merge the payloads of two same types. defined
+    as a function that takes two payloads as parameters and returns the merged payload.
+
+## Option Definitions
+
+Option definitions are usually bindings of values to option names:
+
+```nix
+    {
+      config = {
+        services.httpd.enable = true;
+      };
+    }
+```
+
+## Delaying Conditionals
+
+Use mkIf to push down the evaluation of the conditional into the individual definitions.
+The can prevent the infinite recursion issue where the conditional is dependent on
+the value that is constructed:
+
+```nix
+# config.services.httpd.enable is dependent on environment.systemPackages
+{
+  config = if config.services.httpd.enable then {
+    environment.systemPackages = [ /* ... */ ];
+    # ...
+  } else {};
+}
+```
+
+Solution to the dependency is:
+
+```nix
+{
+  config = mkIf config.services.httpd.enable {
+    environment.systemPackages = [ /* ... */ ];
+    # ...
+  };
+}
+```
+
+The above code is equivalent to:
+
+```nix
+{
+  config = {
+    environment.systemPackages = if config.services.httpd.enable then [ /* ... */ ] else [];
+    # ...
+  };
+}
+```
+
+## Setting Priorities
+
+The mkOverride function can be used to set the priority of an option
+definition. By default option definitions have priority 100 and option defaults
+have priority 1500. Users can explicity set the option priority using mkOverride:
+
+```nix
+    {
+      services.openssh.enable = mkOverride 10 false;
+    }
+```
+
+The function mkForce is equal to mkOverride 50 and mkDefault is equal to
+mkOverride 1000.
+
+## Ordering Definitions
+
+The order for merging definitions is influenced by setting an order priorty. The default
+order priority is 1000. The function mkOrder sets the order priority. The mkBefore and
+mkAfter are equivalent to mkOrder 500 and mkOrder 1500 respectively. In the example below,
+the myFirmware defintion will come before other unordered defintions in the final list value:
+
+```nix
+    {
+      hardware.firmware = mkBefore [ myFirmware ];
+    }
+```
+
+## Merging configurations
+
+Multiple sets of option defintions can be merged together even if they are declared
+in separte modules using mkMerge. This is especially powerful in combination with mkIf:
+
+```nix
+{
+  config = mkMerge
+    [ # Unconditional stuff.
+      { environment.systemPackages = [ /* ... */ ];
+      }
+      # Conditional stuff.
+      (mkIf config.services.bla.enable {
+        environment.systemPackages = [ /* ... */ ];
+      })
+    ];
+}
+
+```
+
+## Warnings
+
+Provide warnings to the user when potentially problematic options are set. An example
+warning is given below:
+
+```nix
+{ config, lib, ... }:
+{
+  config = lib.mkIf config.services.foo.enable {
+    warnings =
+      if config.services.foo.bar
+      then [ ''You have enabled the bar feature of the foo service.
+               This is known to cause some specific problems in certain situations.
+               '' ]
+      else [];
+  };
+}
+
+```
+
+## Assertions
+
+An assertion prevents illegal or problematic problem definitions. The example
+assertion below prevents two conflicting modules to be enabled at the same time:
+
+```nix
+{ config, lib, ... }:
+{
+  config = lib.mkIf config.services.syslogd.enable {
+    assertions =
+      [ { assertion = !config.services.rsyslogd.enable;
+          message = "rsyslogd conflicts with syslogd";
+        }
+      ];
+  };
+}
+
+```
+
+## Importing Modules
+
+Imports can be used to import modules that are ouside of nixpkgs. These additional modules
+can be imported using the imports syntax:
+
+```nix
+    { config, lib, pkgs, ... }:
+    {
+      imports =
+        [ # Use a locally-available module definition in
+          # ./example-module/default.nix
+            ./example-module
+        ];
+
+      services.exampleModule.enable = true;
+    }
+```
+
+The environment variable NIXOS_EXTRA_MODULE_PATH is an absolute path to a NixOS
+module that is included alongside the Nixpkgs NixOS modules. This module
+can in turn import additional modules:
+
+```nix
+    { imports = import ./module-list.nix; }
+```
+
+The module could also not import any additional modules:
+
+```nix
+# NIXOS_EXTRA_MODULE_PATH=/absolute/path/to/extra-module
+    { config, lib, pkgs, ... }:
+
+    {
+      # No `imports` needed
+
+      services.exampleModule1.enable = true;
+    }
+
+```
+
+## Meta attributes
+
+Meta attributes provide extra information regarding the module. The meta.nix
+module defines the meta attributes. The meta attribute is a top level attribute
+similar to options and config. Available meta attributes are:
+
+- maintainers : contains the list of module maintainers
+- doc : points to a valid nixpkgs flavored commonmark file.
+- buildDocsInSandbox : indicates whether the option documentation can be built
+  in a derivation sandbox. Currently this option is honored for modules shipped
+  by nixpkgs. The default value is true and should not be changed unless the
+  module requires access to pkgs in its documentation or its documentation
+  depends on other modules that also aren't sandboxed.
+
+## Replace Modules
+
+The disabledModules attribute of NixOS modules specifies a list of modules that will
+be disabled. The disabled modules can be specified as:
+
+- a full path to the module
+- a string with the filename relative to the module path <nixpkgs/nixos/modules> for nixos
+- an attribute set containing a specific key attribute. This allows some
+  modules to be disabled, despite the module being distributed via attributes
+  instead of file paths. The key should be globally unique; It is recommended to
+  include a filepath in the key.
+
+The exmple below will replace the existing postgresql with the version defined in nixos-unstable
+channel, while keeping the rest of of the modules and packages from the original nixos channel.
+
+```nix
+{ config, lib, pkgs, ... }:
+
+{
+  disabledModules = [ "services/databases/postgresql.nix" ];
+
+  imports =
+    [ # Use postgresql service from nixos-unstable channel.
+      # sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos-unstable
+      <nixos-unstable/nixos/modules/services/databases/postgresql.nix>
+    ];
+
+  services.postgresql.enable = true;
+}
+```
+
+It is also possible to define a custom module as a replacement for an existing module. An example
+is provided below:
+
+```nix
+{ config, lib, pkgs, ... }:
+
+let
+  inherit (lib) mkIf mkOption types;
+  cfg = config.programs.man;
+in
+
+{
+  disabledModules = [ "services/programs/man.nix" ];
+
+  options = {
+    programs.man.enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to enable manual pages.";
+    };
+  };
+
+  config = mkIf cfg.enabled {
+    warnings = [ "disabled manpages for production deployments." ];
+  };
+}
+```
+
 ## Sources
 
 - [Writing Nixos Modules](https://nixos.org/manual/nixos/unstable/index.html#sec-writing-modules)
