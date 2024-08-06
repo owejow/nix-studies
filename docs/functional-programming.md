@@ -226,63 +226,77 @@ call in the following manner:
        }
    ```
 
-## other
+## functions inside of lib.fixed-point.nix
 
-```nix
-  fix' = f: let x = f x // { __unfix__ = f; }; in x;
-```
+2. fix'
 
-```nix
-  converge = f: x:
-    let
-      x' = f x;
-    in
-      if x' == x
-      then x
-      else converge f x';
-```
+   ```nix
+     fix' = f: let x = f x // { __unfix__ = f; }; in x;
+   ```
 
-```nix
-  extends =
-    overlay:
-    f:
-    # The result should be thought of as a function, the argument of that function is not an argument to `extends` itself
-    (
-      final:
-      let
-        prev = f final;
-      in
-      prev // overlay final prev
-    );
+3. converge
+
+   ```nix
+     converge = f: x:
+       let
+         x' = f x;
+       in
+         if x' == x
+         then x
+         else converge f x';
+   ```
+
+4. extends
+
+   ```nix
+     extends =
+       overlay:
+       f:
+       # The result should be thought of as a function, the argument of that function is not an argument to `extends` itself
+       (
+         final:
+         let
+           prev = f final;
+         in
+         prev // overlay final prev
+       );
 
 
-```
+   ```
 
-```nix
-  composeExtensions =
-    f: g: final: prev:
-      let fApplied = f final prev;
-          prev' = prev // fApplied;
-      in fApplied // g final prev';
+5. composeExtensions
 
-```
+   ```nix
+     composeExtensions =
+       f: g: final: prev:
+         let fApplied = f final prev;
+             prev' = prev // fApplied;
+         in fApplied // g final prev';
 
-```nix
-  composeManyExtensions =
-    lib.foldr (x: y: composeExtensions x y) (final: prev: {});
+   ```
 
-```
+6. composeManyExtensions
 
-```nix
-  makeExtensible = makeExtensibleWithCustomName "extend";
-```
+   ```nix
+     composeManyExtensions =
+       lib.foldr (x: y: composeExtensions x y) (final: prev: {});
 
-```nix
-  makeExtensibleWithCustomName = extenderName: rattrs:
-    fix' (self: (rattrs self) // {
-      ${extenderName} = f: makeExtensibleWithCustomName extenderName (extends f rattrs);
-    });
-```
+   ```
+
+7. makeExtensible
+
+   ```nix
+     makeExtensible = makeExtensibleWithCustomName "extend";
+   ```
+
+8. makeExtensibleWithCustomName
+
+   ```nix
+     makeExtensibleWithCustomName = extenderName: rattrs:
+       fix' (self: (rattrs self) // {
+         ${extenderName} = f: makeExtensibleWithCustomName extenderName (extends f rattrs);
+       });
+   ```
 
 ## Sources
 
