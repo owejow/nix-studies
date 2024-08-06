@@ -139,92 +139,92 @@ call in the following manner:
 
 1. Initial call to evaluate:
 
-```nix
-    let
-        g = self: {
-            foo = "foo";
-            bar = "bar";
-            foobar = self.foo + self.bar;
-        }
-    in
-    lib.fix g;
-```
+   ```nix
+       let
+           g = self: {
+               foo = "foo";
+               bar = "bar";
+               foobar = self.foo + self.bar;
+           }
+       in
+       lib.fix g;
+   ```
 
 2. The function fix definition gets expanded:
 
-```nix
-    (f: let x = f x; in x;) g
-```
+   ```nix
+       (f: let x = f x; in x;) g
+   ```
 
 3. The function is called with argument g. In the first step
    the argument f is substituted with the variable definition for
    g:
 
-```nix
-    let x = (self: { foo = "foo"; bar = "bar"; foobar = self.foo + self.bar;}}) x
-```
+   ```nix
+       let x = (self: { foo = "foo"; bar = "bar"; foobar = self.foo + self.bar;}}) x
+   ```
 
 4. The next step is where the variable x is substtituted for the argument "self"
    for the function call:
 
-```nix
-    let x = {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar};
-```
+   ```nix
+       let x = {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar};
+   ```
 
 5. Next we substitute the value of x into the right hand side:
 
-```nix
-    let x = {
-             foo = "foo";
-             bar = "bar";
-             foobar = {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.foo +
-                      {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.bar;
-        }
-```
+   ```nix
+       let x = {
+                foo = "foo";
+                bar = "bar";
+                foobar = {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.foo +
+                         {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.bar;
+           }
+   ```
 
 6. The value of x.foo is resolved
 
-```nix
-    let x = {
-             foo = "foo";
-             bar = "bar";
-             foobar = "foo" +
-                      {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.bar;
-        }
-```
+   ```nix
+       let x = {
+                foo = "foo";
+                bar = "bar";
+                foobar = "foo" +
+                         {foo = "foo"; bar = "bar"; foobar = x.foo + x.bar}.bar;
+           }
+   ```
 
 7. The value of x.bar is resolved:
 
-```nix
-    let x = {
-             foo = "foo";
-             bar = "bar";
-             foobar = "foo" +
-                      "bar";
-        }
-```
+   ```nix
+       let x = {
+                foo = "foo";
+                bar = "bar";
+                foobar = "foo" +
+                         "bar";
+           }
+   ```
 
 8. The foobar expression is evaluated:
 
-```nix
-    let x = {
-             foo = "foo";
-             bar = "bar";
-             foobar = "foobar";
-        }
-```
+   ```nix
+       let x = {
+                foo = "foo";
+                bar = "bar";
+                foobar = "foobar";
+           }
+   ```
 
 9. Amazingly the expression x = f x was evaluated without actually knowing what the
    value of x was originally. Next we return "f x" or the final attribute set
    calculated above:
 
-```nix
-    {
-      foo = "foo";
-      bar = "bar";
-      foobar = "foobar";
-    }
-```
+   ```nix
+       {
+         foo = "foo";
+         bar = "bar";
+         foobar = "foobar";
+       }
+   ```
 
 ## other
 
