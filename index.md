@@ -10,3 +10,4 @@ title: "Nix Study Notes"
 - [Ueful Tips](./docs/useful-tips.md)
 - [Library Functions](./docs/library-functions.md)
 - [Functional Programming](./docs/functional-programming.md)
+- [Modules](./docs/modules.md)
