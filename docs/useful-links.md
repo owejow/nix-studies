@@ -22,6 +22,10 @@ title: "Useful Links"
 - [Infinisil Module System Video](https://infinisil.com/modules.mp4)
 - [writing modules](https://nlewo.github.io/nixos-manual-sphinx/development/writing-modules.xml.html#)
 
+# Nix Command line
+
+- [Nix Shells](https://blog.ysndr.de/posts/guides/2021-12-01-nix-shells/)
+
 # Flakes
 
 - [1000 instances of nixpkgs](https://zimbatm.com/notes/1000-instances-of-nixpkgs)
