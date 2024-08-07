@@ -11,3 +11,4 @@ title: "Nix Study Notes"
 - [Library Functions](./docs/library-functions.md)
 - [Functional Programming](./docs/functional-programming.md)
 - [Modules](./docs/modules.md)
+- [Nix Commands](./docs/nix-commands.md)

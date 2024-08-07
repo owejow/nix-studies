@@ -78,4 +78,4 @@ The source code for the library functions for nixpkgs can be found at:
 The "--depth 1" option is used to create a shallow clone with a history
 truncated to a single commit. This is done to reduce the size of the download.
 
-The library functions are downloaded through the file: nixpkgs/lib/default.nix
+The library functions are downloaded through the file: nixpkgs/lib/default.nix.
