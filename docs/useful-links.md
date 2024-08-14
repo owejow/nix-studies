@@ -15,6 +15,8 @@ title: "Useful Links"
 
 - [Nixos and Flakes](https://nixos-and-flakes.thiscute.world/introduction/): extremely useful guide for setting up nix with flakes
 - [Nixos Asia](https://nixos.asia/en/)
+- [Nix Cheat Sheet (jdheyburn)](https://jdheyburn.co.uk/blog/nix-cheat-sheet/)
+- [Nix Cheat Sheet (nixcademy)](https://nixcademy.com/downloads/cheatsheet.pdf)
 
 # Module System
 
@@ -63,3 +65,9 @@ title: "Useful Links"
 # Video Series
 
 - [Nix Hour](https://www.youtube.com/watch?v=VkkUzggJejo&list=PLyzwHTVJlRc8yjlx4VR4LU5A5O44og9in): (video) covers topics in Nix
+
+# Papers
+
+- [Purely Functional Linux Distribution](https://edolstra.github.io/pubs/nixos-jfp-final.pdf)
+- [Spineless Tagless Gmachine (blackholing)](https://www.microsoft.com/en-us/research/wp-content/uploads/1992/04/spineless-tagless-gmachine.pdf)
+- [Maximal Laziness](https://edolstra.github.io/pubs/laziness-ldta2008-final.pdf)

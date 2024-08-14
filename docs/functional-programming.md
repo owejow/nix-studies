@@ -15,6 +15,10 @@ understand lazy evaluation.
       fix = f: let x = f x; in x;
 ```
 
+The fix program is a fixed point combinator. Additional information regarding
+this topic can be found at: (Fixed Point
+Combinator)[https://en.wikipedia.org/wiki/Fixed-point_combinator]
+
 A funtional programming language consists entirely of functions. The functions
 are like ordinary mathematical functions. The special characteristics of
 functional languages includes:
@@ -23,6 +27,24 @@ functional languages includes:
 2. no side effects: functions only compute results based on the input
 3. order of execution is irrelevant
 4. programs are referentially transparent: variables can be freely replace variables by their value
+
+## Laziness
+
+An excellent explanation of Laziness in Nix can be found at:
+[What You Need to Know About Laziness](https://nixcademy.com/posts/what-you-need-to-know-about-laziness/).
+
+The paper that describes NixOs functional aspects written by the original
+creator of Nix: [A Purely Functional Linux Distribution](https://edolstra.github.io/pubs/nixos-jfp-final.pdf)
+
+A decription of laziness algorithm in Nix: [Maximal Laziness](https://edolstra.github.io/pubs/laziness-ldta2008-final.pdf)
+
+Methodology used to unwrap the outermost part of data-structures in Nix's lazy
+evaluation is called Weak Head Normal Form. It is described in this [wikibooks
+entry](https://en.wikibooks.org/wiki/Haskell/Graph_reduction#Weak_Head_Normal_Form)
+
+The resolution of lazy values can lead to infinite recursion in certain cases.
+The evaluator can detect these "infinite" recursions using the
+[blackholing](https://www.microsoft.com/en-us/research/wp-content/uploads/1992/04/spineless-tagless-gmachine.pdf)
 
 ## Structured Programming
 
@@ -78,6 +100,10 @@ labels. The results of a thunk are stored in a table that associates labels
 with values. Function invocations of a lable will lookup the vlaue rather than
 evaluate the thunk. The results of thunks are memoized. All expressions are
 essentially thunks.
+
+Each new variable gets assigned a parameterless function that calculates its
+result. When the variable’s value computation is referenced, its parameterless
+function is executed. Such a parameterless function is also called thunk.
 
 ## Examples
 
@@ -305,3 +331,4 @@ call in the following manner:
 - [Lazy Evaluation Quora](https://www.quora.com/How-is-lazy-evaluation-implemented-in-functional-programming-languages)
 - [Purely Functional Data Structures](https://www.amazon.com/Purely-Functional-Data-Structures-Okasaki/dp/0521663504/ref=sr_1_1?sr=8-1)
 - [Solutions to Purely Functional Data Structures](https://github.com/qnikst/okasaki)
+- [What You Need to Know About Laziness](https://nixcademy.com/posts/what-you-need-to-know-about-laziness/)
