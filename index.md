@@ -12,3 +12,4 @@ title: "Nix Study Notes"
 - [Functional Programming](./docs/functional-programming.md)
 - [Modules](./docs/modules.md)
 - [Nix Commands](./docs/nix-commands.md)
+- [Nix Overlays](./docs/overlays.md)
